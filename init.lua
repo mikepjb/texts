@@ -22,6 +22,7 @@ end)
 
 -- vim.g.colors_name = "tailstone"
 vim.g.tokyonight_style = "storm"
+vim.cmd("colorscheme tokyonight")
 
 
 require('nvim-treesitter.configs').setup({
