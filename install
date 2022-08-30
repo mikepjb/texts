@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+
+set +e
+
+WARN='\033[1;33m'
+NC='\033[0m'
+PACKER="$HOME/.local/share/nvim/site/pack/packer/start/packer.nvim"
+
+git_config() {
+  echo 'Configuring git..'
+  git config --global --replace-all core.editor 'vim'
+  git config --global --replace-all core.autocrlf false
+  git config --global --replace-all alias.aa 'add --all'
+  git config --global --replace-all alias.br 'branch --sort=committerdate'
+  git config --global --replace-all alias.st 'status'
+  git config --global --replace-all alias.count 'shortlog -sn'
+  git config --global --replace-all alias.ff 'pull --ff-only'
+  git config --global --replace-all alias.co 'checkout'
+  git config --global --replace-all alias.ci 'commit --verbose'
+  git config --global --replace-all alias.di 'diff'
+  git config --global --replace-all alias.dc 'diff --cached'
+  git config --global --replace-all alias.dd 'diff --stat origin/develop HEAD'
+  git config --global --replace-all alias.dn 'diff --name-status'
+  git config --global --replace-all alias.list 'config --global --list'
+  git config --global --replace-all alias.amend 'commit --amend'
+  git config --global --replace-all alias.ffa 'fetch --all && git rebase origin/master'
+  git config --global --replace-all alias.push-new 'push -u origin HEAD'
+  git config --global --replace-all alias.ra "log --abbrev-commit --pretty=format:'%<(7)%C(yellow)%h %Cgreen%<(15)%cr%C(bold cyan)%<(17)<%an>%C(red)%d %Creset %s'"
+  printf "${WARN}Don't forget to set your user.name and user.email with git config --global user.name = <etc>${NC}\n"
+}
+
+mac_deps() {
+  brew install clojure-lsp/brew/clojure-lsp-native tree-sitter luajit neovim
+}
+
+if [[ ! -d $PACKER ]]; then
+    git clone --depth 1 https://github.com/wbthomason/packer.nvim $PACKER
+fi
+
+# ripgrep, ag?, clojure-lsp, clj-kondo, tree-sitter
+# bb, clojure itself.., postgresql/psql, python, xmllint/2
+
+git_config
