@@ -4,13 +4,16 @@ require('packer').startup(function(use)
     -- need a Clojure plugin fireplace,iced,conjure
     -- might need typescript plugins? also daerean has a load of plugins to look at
     -- TODO actually use the bindings for sexp.. does it have slurp/barf?
-    use {'guns/vim-sexp', ft = {'clojure'}}
+    -- use {'guns/vim-sexp', ft = {'clojure'}}
     -- use {'liquidz/vim-iced', ft = {'clojure'}}
     use 'neovim/nvim-lspconfig'
     use {'tpope/vim-fireplace', ft = {'clojure'}}
     use {'mikepjb/vim-fold', ft = {'markdown'}}
-    -- use {'mikepjb/vim-tailstone', run = function() vim.g.colors_name = "tailstone" end}
+    -- use 'norcalli/nvim-colorizer.lua'
+    use 'leafgarland/typescript-vim'
+    use 'maxmellon/vim-jsx-pretty'
     use 'folke/tokyonight.nvim'
+    use 'mikepjb/tailstone.nvim'
     use { 'nvim-treesitter/nvim-treesitter',
         run = function() require('nvim-treesitter.install').update({ with_sync = true }) end,
     }
@@ -21,8 +24,9 @@ require('packer').startup(function(use)
 end)
 
 -- vim.g.colors_name = "tailstone"
-vim.g.tokyonight_style = "storm"
-vim.cmd("colorscheme tokyonight")
+-- vim.g.tokyonight_style = "storm"
+-- vim.cmd("colorscheme tokyonight")
+vim.cmd("colorscheme tailstone")
 
 
 require('nvim-treesitter.configs').setup({
@@ -55,7 +59,7 @@ local on_attach = function(client, bufnr)
   vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
   vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, bufopts)
   -- TODO This gets overwritten by windmove-esque bindings below
-  vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, bufopts)
+  -- vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, bufopts)
   vim.keymap.set('n', '<space>wa', vim.lsp.buf.add_workspace_folder, bufopts)
   vim.keymap.set('n', '<space>wr', vim.lsp.buf.remove_workspace_folder, bufopts)
   vim.keymap.set('n', '<space>wl', function()
@@ -65,7 +69,7 @@ local on_attach = function(client, bufnr)
   vim.keymap.set('n', '<space>rn', vim.lsp.buf.rename, bufopts)
   vim.keymap.set('n', '<space>ca', vim.lsp.buf.code_action, bufopts)
   vim.keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
-  vim.keymap.set('n', '<space>f', vim.lsp.buf.formatting, bufopts)
+  -- vim.keymap.set('n', '<space>f', vim.lsp.buf.formatting, bufopts)
 -- TODO lsp next/previous?
 end
 
@@ -74,6 +78,11 @@ local lsp_flags = {
   debounce_text_changes = 150,
 }
 require('lspconfig')['clojure_lsp'].setup{
+    on_attach = on_attach,
+    flags = lsp_flags,
+}
+
+require('lspconfig')['tsserver'].setup{
     on_attach = on_attach,
     flags = lsp_flags,
 }
@@ -109,6 +118,7 @@ vim.opt.scrolloff = 3
 vim.opt.errorbells = false
 vim.opt.foldenable = false
 vim.opt.autoread = false
+vim.opt.signcolumn = "number"
 vim.opt.fillchars = { stl = "-", stlnc = "-" }
 vim.opt.statusline = "-- %1*%F%m%r%h%w%* %= %y [%l,%c] [%L,%p%%]"
 vim.opt.clipboard = "unnamed,unnamedplus"
@@ -152,6 +162,8 @@ vim.keymap.set('i', '<C-f>', '<Right>')
 vim.keymap.set('i', '<C-a>', '<Home>')
 vim.keymap.set('i', '<C-e>', '<End>')
 vim.keymap.set('n', '<C-g>', ':noh<CR><C-g>')
+vim.keymap.set('i', '<C-c>', '<esc>')
+vim.keymap.set('i', '<C-l>', ' => ')
 
 vim.cmd([[command! TrimWhitespace :%s/\s\+$//e]])
 

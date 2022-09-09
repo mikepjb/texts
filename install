@@ -30,7 +30,7 @@ git_config() {
 }
 
 mac_deps() {
-  brew install clojure-lsp/brew/clojure-lsp-native tree-sitter luajit neovim
+  brew install clojure-lsp/brew/clojure-lsp-native tree-sitter luajit neovim ripgrep fd
 }
 
 if [[ ! -d $PACKER ]]; then
@@ -39,5 +39,7 @@ fi
 
 # ripgrep, ag?, clojure-lsp, clj-kondo, tree-sitter
 # bb, clojure itself.., postgresql/psql, python, xmllint/2
+
+# typescript-language-server tsserver
 
 git_config

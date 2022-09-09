@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+
+set +e
+
+# Build neovim, reliably.
+# In some cases, we can't access all resources required to build neovim so instead we want to cache the dependencies
+# and source them ourselves.
+
+# requires: cmake, gcc g++
+# brew install ninja libtool automake cmake pkg-config gettext curl
+# brew install htop.. I know it sounds weird but libvterm needs ncurses with wide char support and that depends on it
+# too.
+
+# https://github.com/neovim/neovim/wiki/Building-Neovim
+#RHEL
+# sudo yum -y install ninja-build libtool autoconf automake cmake gcc gcc-c++ make pkgconfig unzip patch gettext curl
+
+export NVIM_SRC="$HOME/src/neovim"
+export NVIM_DEPS_SRC="$HOME/src/lib"
+mkdir -p $NVIM_DEPS_SRC
+
+export LIBTERMKEY_SRC="$NVIM_DEPS_SRC/libtermkey"
+if [[ ! -d $LIBTERMKEY_SRC ]]; then
+  git clone https://github.com/neovim/libtermkey.git $LIBTERMKEY_SRC
+fi
+cd $LIBTERMKEY_SRC
+make
+
+export LIBVTERM_SRC="$NVIM_DEPS_SRC/libvterm"
+if [[ ! -d $LIBVTERM_SRC ]]; then
+  git clone https://github.com/TragicWarrior/libvterm.git $LIBVTERM_SRC
+fi
+cd $LIBVTERM_SRC
+# sudo mkdir /usr/local/opt && ln -s /opt/homebrew/Cellar/ncurses/6.3 /usr/local/opt/ncurses # for mac os m1
+cmake CMakeLists.txt
+make
+
+# luajit
+export LUAJIT_SRC="$NVIM_DEPS_SRC/luajit"
+if [[ ! -d $LUAJIT_SRC ]]; then
+  git clone https://github.com/LuaJIT/LuaJIT.git $LUAJIT_SRC
+fi
+cd $LUAJIT_SRC
+# make MACOSX_DEPLOYMENT_TARGET=12.5
+make
+
+if [[ ! -d $NVIM_SRC ]]; then
+  git clone https://github.com/neovim/neovim.git "$NVIM_SRC"
+else
+  echo 'neovim repo already downloaded'
+fi
+
+cd $NVIM_SRC
+
+git pull
+git checkout stable
+
+make CMAKE_BUILD_TYPE=Release \
+  BUNDLED_CMAKE_FLAG="-DUSE_BUNDLED=OFF -DUSE_BUNDLED_LUV=ON -DUSE_BUNDLED_TS=ON -DUSE_BUNDLED_LIBVTERM=ON -DUSE_BUNDLED_LIBUV=ON -DUSE_BUNDLED_LUAJIT=ON -DUSE_BUNDLED_LUAROCKS=ON"
+# make CMAKE_BUILD_TYPE=RelWithDebInfo \
+#   USE_BUNDLED=0 \
+#   LIBTERMKEY_INCLUDE_DIR=$LIBTERMKEY_SRC
+#   LIBVTERM_INCLUDE_DIR=$LIBVTERM_SRC
+
+# sudo make install
