@@ -29,6 +29,9 @@ end)
 vim.cmd("colorscheme tailstone")
 
 
+-- clang is default on mac os, we set it here for RHEL 7.6 where gcc 4.8.5 is too old to compile many of the treesitter
+-- extensions
+require('nvim-treesitter.install').compilers = { "clang++" }
 require('nvim-treesitter.configs').setup({
     ensure_installed = {
         "clojure", "typescript", "c", "html", "css", "go", "html",
