@@ -168,6 +168,11 @@ vim.keymap.set('n', '<C-g>', ':noh<CR><C-g>')
 vim.keymap.set('i', '<C-c>', '<esc>')
 vim.keymap.set('i', '<C-l>', ' => ')
 
+
+-- TODO 
+-- handle shadow-cljs too, optionally take 1 argument to define a different build than "dev"
+vim.cmd([[command! JackInCljs :CljEval (figwheel.main.api/cljs-repl "dev")<cr>]])
+vim.cmd([[command! SJackInCljs :CljEval (shadow.cljs.devtools.api/repl :app-dev)<cr>]])
 vim.cmd([[command! TrimWhitespace :%s/\s\+$//e]])
 
 function tab()
