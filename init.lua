@@ -5,7 +5,6 @@ require('packer').startup(function(use)
     -- might need typescript plugins? also daerean has a load of plugins to look at
     -- TODO actually use the bindings for sexp.. does it have slurp/barf?
     -- use {'guns/vim-sexp', ft = {'clojure'}}
-    -- use {'liquidz/vim-iced', ft = {'clojure'}}
     use 'neovim/nvim-lspconfig'
     use {'tpope/vim-fireplace', ft = {'clojure'}}
     use {'mikepjb/vim-fold', ft = {'markdown'}}
@@ -14,6 +13,7 @@ require('packer').startup(function(use)
     use 'maxmellon/vim-jsx-pretty'
     use 'folke/tokyonight.nvim'
     use 'mikepjb/tailstone.nvim'
+    use '~/src/oath.nvim'
     use { 'nvim-treesitter/nvim-treesitter',
         run = function() require('nvim-treesitter.install').update({ with_sync = true }) end,
     }
@@ -39,6 +39,9 @@ require('nvim-treesitter.configs').setup({
     }
 })
 
+require('telescope').setup({
+  defaults = { file_ignore_patterns = {"node_modules"} }
+})
 
 -- Mappings.
 -- See `:help vim.diagnostic.*` for documentation on any of the below functions
@@ -151,6 +154,7 @@ vim.keymap.set('n', '<C-h>', '<C-w><C-h>')
 vim.keymap.set('n', '<C-j>', '<C-w><C-j>')
 vim.keymap.set('n', '<C-k>', '<C-w><C-k>')
 vim.keymap.set('n', '<C-l>', '<C-w><C-l>')
+vim.keymap.set('n', '<Tab>', '<C-^>')
 vim.keymap.set('i', '<C-c>', '<esc>')
 vim.keymap.set('n', 'Q', '@q')
 vim.keymap.set('n', 'gb', ':Git blame<CR>')
@@ -196,11 +200,13 @@ function runFile()
   local filetype = vim.bo.filetype
   local filename = vim.fn.expand('%:t')
   if filetype == 'clojure' then
-    print('clojure time!')
-  elseif filename == "init.lua" then
+    print('Reloading..')
+    vim.cmd('Require') -- fireplace command
+  -- elseif filename == "init.lua" then
+  elseif filetype == 'lua' then
     -- vim.fn.source(vim.fn.expand('%'))
-    vim.cmd("so %")
-    print('reloading init.lua')
+    vim.cmd('so %')
+    print('loaded lua file')
   else
     print('what filetype is this?')
   end

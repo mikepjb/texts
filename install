@@ -29,8 +29,33 @@ git_config() {
   printf "${WARN}Don't forget to set your user.name and user.email with git config --global user.name = <etc>${NC}\n"
 }
 
+dotfiles_setup() {
+  echo 'Configuring dotfiles..'
+  echo '. ~/.bashrc' > ~/.bash_profile
+
+  if [[ -f "$HOME/.bashrc" ]]; then
+    echo '~/.bashrc already exists, please use -f to overwrite'
+    echo 'diff for ~/.bashrc'
+    diff bashrc $HOME/.bashrc
+  else
+    echo "~/.bashrc doesn't exist, copying texts bashrc content"
+    cp ./bashrc $HOME/.bashrc
+  fi
+}
+
 mac_deps() {
-  brew install clojure-lsp/brew/clojure-lsp-native tree-sitter luajit neovim ripgrep fd
+  brew install clojure-lsp/brew/clojure-lsp-native tree-sitter luajit neovim ripgrep fd tree
+}
+
+tmux_terminfo() {
+  # mac os ncurses doesn't have the entry for tmux-256color so we download and set it manually.
+  curl -LO https://invisible-island.net/datafiles/current/terminfo.src.gz && gunzip terminfo.src.gz
+  sudo /usr/bin/tic -xe tmux-256color terminfo.src
+}
+
+env_info() {
+  echo "shell: $SHELL"
+  echo "shell version: $(bash --version)"
 }
 
 if [[ ! -d $PACKER ]]; then
@@ -42,4 +67,6 @@ fi
 
 # typescript-language-server tsserver
 
+env_info
 git_config
+dotfiles_setup
