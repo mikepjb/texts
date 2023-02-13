@@ -1,19 +1,17 @@
 require('packer').startup(function(use)
     use 'wbthomason/packer.nvim'
     use 'tpope/vim-fugitive'
-    -- need a Clojure plugin fireplace,iced,conjure
-    -- might need typescript plugins? also daerean has a load of plugins to look at
     -- TODO actually use the bindings for sexp.. does it have slurp/barf?
     -- use {'guns/vim-sexp', ft = {'clojure'}}
     use 'neovim/nvim-lspconfig'
-    use {'tpope/vim-fireplace', ft = {'clojure'}}
+    -- use {'tpope/vim-fireplace', ft = {'clojure'}}
+    -- use { '~/src/replica.nvim', ft = {'clojure'}}
+    use { 'mikepjb/replica.nvim', ft = {'clojure'}}
     use {'mikepjb/vim-fold', ft = {'markdown'}}
-    -- use 'norcalli/nvim-colorizer.lua'
     use 'leafgarland/typescript-vim'
     use 'maxmellon/vim-jsx-pretty'
     use 'folke/tokyonight.nvim'
     use 'mikepjb/tailstone.nvim'
-    use '~/src/oath.nvim'
     use { 'nvim-treesitter/nvim-treesitter',
         run = function() require('nvim-treesitter.install').update({ with_sync = true }) end,
     }
@@ -60,23 +58,18 @@ local on_attach = function(client, bufnr)
   -- Mappings.
   -- See `:help vim.lsp.*` for documentation on any of the below functions
   local bufopts = { noremap=true, silent=true, buffer=bufnr }
+  vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
   vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, bufopts)
   vim.keymap.set('n', 'gd', vim.lsp.buf.definition, bufopts)
-  vim.keymap.set('n', 'K', vim.lsp.buf.hover, bufopts)
   vim.keymap.set('n', 'gi', vim.lsp.buf.implementation, bufopts)
-  -- TODO This gets overwritten by windmove-esque bindings below
-  -- vim.keymap.set('n', '<C-k>', vim.lsp.buf.signature_help, bufopts)
-  vim.keymap.set('n', '<space>wa', vim.lsp.buf.add_workspace_folder, bufopts)
-  vim.keymap.set('n', '<space>wr', vim.lsp.buf.remove_workspace_folder, bufopts)
-  vim.keymap.set('n', '<space>wl', function()
-    print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
-  end, bufopts)
+  vim.keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
+  vim.keymap.set('n', 'gj', vim.diagnostic.goto_next, bufopts)
+  vim.keymap.set('n', 'gk', vim.diagnostic.goto_prev, bufopts)
+  vim.keymap.set('n', '<space>q', vim.diagnostic.setqflist, bufopts)
   vim.keymap.set('n', '<space>D', vim.lsp.buf.type_definition, bufopts)
   vim.keymap.set('n', '<space>rn', vim.lsp.buf.rename, bufopts)
   vim.keymap.set('n', '<space>ca', vim.lsp.buf.code_action, bufopts)
-  vim.keymap.set('n', 'gr', vim.lsp.buf.references, bufopts)
-  -- vim.keymap.set('n', '<space>f', vim.lsp.buf.formatting, bufopts)
--- TODO lsp next/previous?
+  -- TODO lsp next/previous?
 end
 
 local lsp_flags = {
@@ -101,7 +94,7 @@ vim.opt.guicursor = ""
 vim.opt.mouse = "a"
 
 vim.opt.nu = true
-vim.opt.relativenumber = true
+vim.opt.relativenumber = false
 
 vim.opt.autowrite = true
 vim.opt.hidden = true
@@ -200,13 +193,15 @@ function runFile()
   local filetype = vim.bo.filetype
   local filename = vim.fn.expand('%:t')
   if filetype == 'clojure' then
-    print('Reloading..')
-    vim.cmd('Require') -- fireplace command
-  -- elseif filename == "init.lua" then
+    vim.cmd('Require') -- replica command
   elseif filetype == 'lua' then
     -- vim.fn.source(vim.fn.expand('%'))
-    vim.cmd('so %')
-    print('loaded lua file')
+    if string.find(filename, "_spec.lua") then
+      vim.cmd("terminal make test")
+    else
+      vim.cmd('so %')
+      print('loaded lua file')
+    end
   else
     print('what filetype is this?')
   end

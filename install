@@ -45,6 +45,7 @@ dotfiles_setup() {
 
 mac_deps() {
   brew install clojure-lsp/brew/clojure-lsp-native tree-sitter luajit neovim ripgrep fd tree
+  brew install --cask emacs
 }
 
 tmux_terminfo() {
