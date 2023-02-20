@@ -1,12 +1,18 @@
 require('packer').startup(function(use)
     use 'wbthomason/packer.nvim'
     use 'tpope/vim-fugitive'
-    -- TODO actually use the bindings for sexp.. does it have slurp/barf?
-    -- use {'guns/vim-sexp', ft = {'clojure'}}
+    use {'guns/vim-sexp', ft = {'clojure'}}
     use 'neovim/nvim-lspconfig'
-    -- use {'tpope/vim-fireplace', ft = {'clojure'}}
-    -- use { '~/src/replica.nvim', ft = {'clojure'}}
-    use { 'mikepjb/replica.nvim', ft = {'clojure'}}
+    use {
+      '~/src/replica.nvim',
+      config = function()
+        require("replica").setup({
+          auto_connect = true,
+          debug = true
+        })
+      end,
+      ft = {'clojure'}
+    }
     use {'mikepjb/vim-fold', ft = {'markdown'}}
     use 'leafgarland/typescript-vim'
     use 'maxmellon/vim-jsx-pretty'

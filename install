@@ -48,6 +48,10 @@ mac_deps() {
   brew install --cask emacs
 }
 
+linux_deps() {
+  echo 'do you have xclip installed?'
+}
+
 tmux_terminfo() {
   # mac os ncurses doesn't have the entry for tmux-256color so we download and set it manually.
   curl -LO https://invisible-island.net/datafiles/current/terminfo.src.gz && gunzip terminfo.src.gz
