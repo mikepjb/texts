@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+#
+# Sync is a script that makes sure your current environment is setup for development use. It should be idempotent,
+# meaning you can run it multiple times without changing the output.
 
 set +e
 
@@ -35,21 +38,30 @@ dotfiles_setup() {
 
   if [[ -f "$HOME/.bashrc" ]]; then
     echo '~/.bashrc already exists, please use -f to overwrite'
+    printf "${WARN}we should check this is a softlink${NC}\n"
     echo 'diff for ~/.bashrc'
     diff bashrc $HOME/.bashrc
   else
-    echo "~/.bashrc doesn't exist, copying texts bashrc content"
-    cp ./bashrc $HOME/.bashrc
+    echo "~/.bashrc doesn't exist, softlinking texts bashrc content to ~/.bashrc"
+    # cp ./bashrc $HOME/.bashrc
+    ln -s $PWD/bashrc $HOME/.bashrc
   fi
 }
 
 mac_deps() {
-  brew install clojure-lsp/brew/clojure-lsp-native tree-sitter luajit neovim ripgrep fd tree
+  brew install clojure-lsp/brew/clojure-lsp-native tree-sitter luajit neovim ripgrep fd tree openjdk@18 borkdude/brew/babashka jq harelba/q/q ranger cmus tig newsboat
   brew install --cask emacs
 }
 
 linux_deps() {
   echo 'do you have xclip installed?'
+}
+
+js_deps() {
+  # javascript/typescript use tsserver as an lsp client and can be installed as an npm package
+  # you should install this in the project as a dev dep to have more accurate results but this is also good for odd .js
+  # scripts.
+  npm i -g typescript typescript-language-server
 }
 
 tmux_terminfo() {
@@ -67,6 +79,15 @@ if [[ ! -d $PACKER ]]; then
     git clone --depth 1 https://github.com/wbthomason/packer.nvim $PACKER
 fi
 
+pull_files() {
+  git -C ~/src/knowledge pull --ff-only
+}
+
+setup_dirs() {
+  mkdir -vp $HOME/.notes
+  mkdir -vp $HOME/.newsboat
+}
+
 # ripgrep, ag?, clojure-lsp, clj-kondo, tree-sitter
 # bb, clojure itself.., postgresql/psql, python, xmllint/2
 
@@ -75,3 +96,6 @@ fi
 env_info
 git_config
 dotfiles_setup
+js_deps
+pull_files
+setup_dirs

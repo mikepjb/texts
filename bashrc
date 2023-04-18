@@ -26,11 +26,11 @@ path_dirs=(
   /usr/local/sbin
   /bin
   /sbin
+  $HOME/.config/nvim/bin
   /usr/local/opt/node@16/bin
   /opt/homebrew/opt/node@16/bin
   $HOME/.local/share/nvim/site/pack/packer/opt/vim-iced/bin
   $HOME/.config/npm/bin
-  /opt/homebrew/bin
   $HOME/.local/bin
   $HOME/bin
   /usr/bin
@@ -49,11 +49,12 @@ export PAGER='less -S'
 export SSH_AUTH_SOCK=$HOME/.ssh/ssh-agent.socket
 export NPM_CONFIG_PREFIX=$HOME/.config/npm
 export GEM_HOME=$HOME/.config/gems
+export JAVA_HOME="${JAVA_HOME:-/opt/homebrew/opt/openjdk/libexec/openjdk.jdk/Contents/Home}"
 
 alias gr='cd $(git rev-parse --show-toplevel || echo ".")'
 alias ..='cd ..'
-alias i="$HOME/src/texts/install && echo 'Reloading shell..' && source $HOME/.bashrc"
-alias t='tmux attach -t vty || tmux new -s vty'
+alias s="config_sync && echo 'Reloading shell..' && source $HOME/.bashrc"
+alias x='tmux attach -t vty || tmux new -s vty'
 alias de='export $(egrep -v "^#" .env | xargs)'
 alias xclip='xclip -sel clip'
 alias jv="jq -C | less -R"
@@ -67,6 +68,7 @@ alias pg='pg_ctl -D /usr/local/var/postgres' # start/stop
 alias config="/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME"
 alias nr='npm run'
 alias cds='cd ~/.config/nvim' # cd => setup
+alias t='config_todo_list'
 
 gxi() { grep -r --color=always --exclude-dir={web-target,.clj-kondo,node_modules,out,target} "$@"; }
 gx() { gxi "$@" | less -R; }
@@ -89,7 +91,28 @@ jobs_marker() {
   ((n)) && echo -n '&' || echo -n '$'
 }
 
-PROMPT_COMMAND='PS1="\W($(git_state)) $(jobs_marker) "'
+inside_git_repo() {
+  git rev-parse --is-inside-work-tree > /dev/null 2>&1
+}
+
+# TODO does not list files that the match comes from
+config_todo_list() {
+  if inside_git_repo; then
+    git ls-files | xargs grep -h "\(TODO\|NEXT\|XXX\)" 2>/dev/null
+  else
+    grep -rh "\(TODO\|NEXT\|XXX\)" $HOME/.notes 2>/dev/null
+  fi
+}
+
+config_todo_count() {
+  local n=$(config_todo_list | wc -l)
+  # also.. would be kinda cool to have a TODOs tool in vim to jump to next etc
+  # also ISO dates are sortable as strings so perhaps having them too implements a poor mans schedule/deadline
+  # but we miss out on +1y/repeatable tasks
+  ((n)) && echo -n $n || echo -n '0'
+}
+
+PROMPT_COMMAND='PS1="\W($(git_state):$(config_todo_count)) $(jobs_marker) "'
 
 if [ "$OS" = "Mac" ]; then
   if [ -f $(brew --prefix)/etc/bash_completion ]; then

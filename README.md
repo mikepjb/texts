@@ -7,6 +7,8 @@ Stored under ~/.config/nvim
 ## Terminal Colors
 
 cursor - #fbbf24
+background - #1c1917
+foreground - #f5f5f4
 
 black - #57534e
 bright-black - #d6d3d1

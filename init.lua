@@ -1,30 +1,38 @@
 require('packer').startup(function(use)
-    use 'wbthomason/packer.nvim'
-    use 'tpope/vim-fugitive'
-    use {'guns/vim-sexp', ft = {'clojure'}}
-    use 'neovim/nvim-lspconfig'
-    use {
-      '~/src/replica.nvim',
-      config = function()
-        require("replica").setup({
-          auto_connect = true,
-          debug = true
-        })
-      end,
-      ft = {'clojure'}
-    }
-    use {'mikepjb/vim-fold', ft = {'markdown'}}
-    use 'leafgarland/typescript-vim'
-    use 'maxmellon/vim-jsx-pretty'
-    use 'folke/tokyonight.nvim'
-    use 'mikepjb/tailstone.nvim'
-    use { 'nvim-treesitter/nvim-treesitter',
-        run = function() require('nvim-treesitter.install').update({ with_sync = true }) end,
-    }
-    use {
-        'nvim-telescope/telescope.nvim', tag = '0.1.0',
-        requires = { {'nvim-lua/plenary.nvim'} }
-    }
+  use 'wbthomason/packer.nvim'
+  use 'tpope/vim-fugitive'
+  use {
+    'guns/vim-sexp',
+    ft = {'clojure'},
+    config = function()
+      vim.keymap.set('n', '<M-k>', '<Plug>(sexp_emit_tail_element)', {noremap = false})
+      vim.keymap.set('n', '<M-l>', '<Plug>(sexp_capture_tail_element)', {noremap = false})
+    end
+  }
+  use 'neovim/nvim-lspconfig'
+  use {
+    '~/src/replica.nvim',
+    config = function()
+      require("replica").setup({
+        auto_connect = true,
+        debug = true
+      })
+    end,
+    ft = {'clojure'}
+  }
+  use {'mikepjb/vim-fold', ft = {'markdown'}}
+  use 'leafgarland/typescript-vim'
+  use 'maxmellon/vim-jsx-pretty'
+  use 'folke/tokyonight.nvim'
+  use 'mikepjb/tailstone.nvim'
+  use {
+    'nvim-treesitter/nvim-treesitter',
+    run = function() require('nvim-treesitter.install').update({ with_sync = true }) end,
+  }
+  use {
+    'nvim-telescope/telescope.nvim', tag = '0.1.1',
+    requires = { {'nvim-lua/plenary.nvim'} }
+  }
 end)
 
 -- vim.g.colors_name = "tailstone"
@@ -75,7 +83,6 @@ local on_attach = function(client, bufnr)
   vim.keymap.set('n', '<space>D', vim.lsp.buf.type_definition, bufopts)
   vim.keymap.set('n', '<space>rn', vim.lsp.buf.rename, bufopts)
   vim.keymap.set('n', '<space>ca', vim.lsp.buf.code_action, bufopts)
-  -- TODO lsp next/previous?
 end
 
 local lsp_flags = {
@@ -91,9 +98,6 @@ require('lspconfig')['tsserver'].setup{
     on_attach = on_attach,
     flags = lsp_flags,
 }
-
--- TODO
--- primeagen uses netrw all the time
 
 vim.opt.termguicolors = true
 vim.opt.guicursor = ""
@@ -143,10 +147,12 @@ vim.g.ftplugin_sql_omni_key = "<Nop>" -- stop sql filetype stealing <C-c>
 
 vim.keymap.set('n', '<C-q>', ':q<CR>')
 vim.keymap.set('n', '<Leader>i', ':e ~/.config/nvim/init.lua<CR>')
-vim.keymap.set('n', '<Leader>n', ':e ~/.notes.md<CR>')
+vim.keymap.set('n', '<Leader>n', ':e ~/.notes/index.md<CR>')
+vim.keymap.set('n', '<Leader>k', ':e ~/src/knowledge/index.md<CR>')
 vim.keymap.set('n', '<Leader>f', ':Telescope find_files<CR>')
 vim.keymap.set('n', '<Leader>b', ':Telescope buffers<CR>')
-vim.keymap.set('n', '<Leader>g', ':Telescope grep_string<CR>')
+vim.keymap.set('n', '<Leader>g', ':Telescope live_grep<CR>')
+
 vim.keymap.set('n', '<Leader>c', ':copen<CR>') -- current list
 vim.keymap.set('n', '<Leader>e', ':Explore<CR>')
 vim.keymap.set('n', '<C-h>', '<C-w><C-h>')
@@ -184,8 +190,8 @@ function tab()
     return "<Tab>"
   end
 
-  local char = vim.fn.getline('.')[col - 1]
-  if char ~= '\\k' then
+  local char = string.sub(vim.fn.getline('.'), col, col)
+  if string.match(char, "%S+") then
     return "<C-p>"
   else
     return "<Tab>"
