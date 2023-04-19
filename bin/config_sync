@@ -46,6 +46,10 @@ dotfiles_setup() {
     # cp ./bashrc $HOME/.bashrc
     ln -s $PWD/bashrc $HOME/.bashrc
   fi
+
+  if [[ -f "$HOME/.tmux.conf" ]]; then
+    ln -s $PWD/tmux.conf $HOME/.tmux.conf
+  fi
 }
 
 mac_deps() {

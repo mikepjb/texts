@@ -148,7 +148,7 @@ vim.g.ftplugin_sql_omni_key = "<Nop>" -- stop sql filetype stealing <C-c>
 vim.keymap.set('n', '<C-q>', ':q<CR>')
 vim.keymap.set('n', '<Leader>i', ':e ~/.config/nvim/init.lua<CR>')
 vim.keymap.set('n', '<Leader>n', ':e ~/.notes/index.md<CR>')
-vim.keymap.set('n', '<Leader>k', ':e ~/src/knowledge/index.md<CR>')
+vim.keymap.set('n', '<Leader>k', ':e ~/src/knowledge/src/index.md<CR>')
 vim.keymap.set('n', '<Leader>f', ':Telescope find_files<CR>')
 vim.keymap.set('n', '<Leader>b', ':Telescope buffers<CR>')
 vim.keymap.set('n', '<Leader>g', ':Telescope live_grep<CR>')
