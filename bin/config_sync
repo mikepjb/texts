@@ -48,6 +48,8 @@ dotfiles_setup() {
   fi
 
   if [[ -f "$HOME/.tmux.conf" ]]; then
+    echo 'tmux.conf already exists'
+  else
     ln -s $PWD/tmux.conf $HOME/.tmux.conf
   fi
 }
