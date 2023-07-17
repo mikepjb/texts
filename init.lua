@@ -1,26 +1,33 @@
+-- TODO markdown should line wrap so you can understand what you write but
+-- still have correct single line text.
+-- TODO consider 4 space vs. 2 space to avoid allowing you to compact your code
+--
+-- (e.g the primeagen advice)
+
 require('packer').startup(function(use)
   use 'wbthomason/packer.nvim'
   use 'tpope/vim-fugitive'
-  use {
-    'guns/vim-sexp',
-    ft = {'clojure'},
-    config = function()
-      vim.keymap.set('n', '<M-k>', '<Plug>(sexp_emit_tail_element)', {noremap = false})
-      vim.keymap.set('n', '<M-l>', '<Plug>(sexp_capture_tail_element)', {noremap = false})
-    end
-  }
   use 'neovim/nvim-lspconfig'
-  use {
-    '~/src/replica.nvim',
-    config = function()
-      require("replica").setup({
-        auto_connect = true,
-        debug = true
-      })
-    end,
-    ft = {'clojure'}
-  }
-  use {'mikepjb/vim-fold', ft = {'markdown'}}
+  use 'tpope/vim-fireplace'
+  -- use {
+  --   '~/src/replica.nvim',
+  --   config = function()
+  --     require("replica").setup({
+  --       auto_connect = true,
+  --       debug = true
+  --     })
+  --   end,
+  --   ft = {'clojure'}
+  -- }
+  -- return {
+  --  "folke/trouble.nvim",
+  --  dependencies = { "nvim-tree/nvim-web-devicons" },
+  --  opts = {
+  --   -- your configuration comes here
+  --   -- or leave it empty to use the default settings
+  --   -- refer to the configuration section below
+  --  },
+  -- }
   use 'leafgarland/typescript-vim'
   use 'maxmellon/vim-jsx-pretty'
   use 'folke/tokyonight.nvim'
@@ -40,6 +47,8 @@ end)
 -- vim.cmd("colorscheme tokyonight")
 vim.cmd("colorscheme tailstone")
 
+-- enables folding for markdown using the default plugin that comes with (neo)vim
+vim.g.markdown_folding = 1
 
 -- clang is default on mac os, we set it here for RHEL 7.6 where gcc 4.8.5 is too old to compile many of the treesitter
 -- extensions
@@ -122,7 +131,7 @@ vim.opt.swapfile = false
 vim.opt.backup = false
 vim.opt.writebackup = false
 vim.opt.errorbells = false
-vim.opt.textwidth = 119
+vim.opt.textwidth = 79
 vim.opt.scrolloff = 3
 vim.opt.errorbells = false
 vim.opt.foldenable = false
@@ -139,28 +148,31 @@ end
 vim.opt.undodir = undodir
 vim.opt.undofile = true
 
-vim.wo.colorcolumn = "120"
+vim.wo.colorcolumn = "80"
 vim.g.mapleader = " "
 vim.opt.iskeyword = vim.opt.iskeyword + "-"
 vim.g.sh_noisk = 1 -- stop vim messing with iskeyword when opening a shell file
 vim.g.ftplugin_sql_omni_key = "<Nop>" -- stop sql filetype stealing <C-c>
 
 vim.keymap.set('n', '<C-q>', ':q<CR>')
+vim.keymap.set('n', '<Leader>s', ':PackerSync<CR>')
 vim.keymap.set('n', '<Leader>i', ':e ~/.config/nvim/init.lua<CR>')
 vim.keymap.set('n', '<Leader>n', ':e ~/.notes/index.md<CR>')
 vim.keymap.set('n', '<Leader>k', ':e ~/src/knowledge/src/index.md<CR>')
 vim.keymap.set('n', '<Leader>f', ':Telescope find_files<CR>')
 vim.keymap.set('n', '<Leader>b', ':Telescope buffers<CR>')
 vim.keymap.set('n', '<Leader>g', ':Telescope live_grep<CR>')
+vim.keymap.set('n', '<Leader>h', ':History<CR>')
 
 vim.keymap.set('n', '<Leader>c', ':copen<CR>') -- current list
 vim.keymap.set('n', '<Leader>e', ':Explore<CR>')
-vim.keymap.set('n', '<C-h>', '<C-w><C-h>')
-vim.keymap.set('n', '<C-j>', '<C-w><C-j>')
-vim.keymap.set('n', '<C-k>', '<C-w><C-k>')
-vim.keymap.set('n', '<C-l>', '<C-w><C-l>')
+vim.keymap.set('n', '<BS>', '<C-w><C-h>', { noremap = true }) -- compatability
+vim.keymap.set('n', '<C-h>', '<C-w><C-h>', { noremap = true })
+vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { noremap = true })
+vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { noremap = true })
+vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { noremap = true })
 vim.keymap.set('n', '<Tab>', '<C-^>')
-vim.keymap.set('i', '<C-c>', '<esc>')
+vim.keymap.set('i', '<C-c>', '<esc>', { noremap = true })
 vim.keymap.set('n', 'Q', '@q')
 vim.keymap.set('n', 'gb', ':Git blame<CR>')
 vim.keymap.set('c', '<C-b>', '<Left>')
@@ -177,11 +189,6 @@ vim.keymap.set('n', '<C-g>', ':noh<CR><C-g>')
 vim.keymap.set('i', '<C-c>', '<esc>')
 vim.keymap.set('i', '<C-l>', ' => ')
 
-
--- TODO 
--- handle shadow-cljs too, optionally take 1 argument to define a different build than "dev"
-vim.cmd([[command! JackInCljs :CljEval (figwheel.main.api/cljs-repl "dev")<cr>]])
-vim.cmd([[command! SJackInCljs :CljEval (shadow.cljs.devtools.api/repl :app-dev)<cr>]])
 vim.cmd([[command! TrimWhitespace :%s/\s\+$//e]])
 
 function tab()
@@ -206,6 +213,8 @@ function runFile()
   local filename = vim.fn.expand('%:t')
   if filetype == 'clojure' then
     vim.cmd('Require') -- replica command
+  elseif filetype == 'markdown' then
+    vim.cmd("normal za")
   elseif filetype == 'lua' then
     -- vim.fn.source(vim.fn.expand('%'))
     if string.find(filename, "_spec.lua") then

@@ -49,7 +49,6 @@ export PAGER='less -S'
 export SSH_AUTH_SOCK=$HOME/.ssh/ssh-agent.socket
 export NPM_CONFIG_PREFIX=$HOME/.config/npm
 export GEM_HOME=$HOME/.config/gems
-export JAVA_HOME="${JAVA_HOME:-/opt/homebrew/opt/openjdk/libexec/openjdk.jdk/Contents/Home}"
 
 alias gr='cd $(git rev-parse --show-toplevel || echo ".")'
 alias ..='cd ..'
@@ -62,13 +61,14 @@ alias ssha="ssh-agent -a $SSH_AUTH_SOCK && ssh-add ~/.ssh/id_rsa"
 # alias open='xdg-open' # only for linux
 alias vi='nvim'
 alias nm='neomutt'
-alias get-music='youtube-dl --extract-audio --audio-format m4a'
+alias get-music='yt-dlp --extract-audio --audio-format m4a'
 alias rkb='xset r rate 200 25 && setxkbmap -layout us -option ctrl:nocaps'
 alias pg='pg_ctl -D /usr/local/var/postgres' # start/stop
 alias config="/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME"
 alias nr='npm run'
 alias cds='cd ~/.config/nvim' # cd => setup
 alias t='config_todo_list'
+alias focus='play -n synth brownnoise synth pinknoise mix synth sine amod 0.1 20 gain -20'
 
 gxi() { grep -r --color=always --exclude-dir={web-target,.clj-kondo,node_modules,out,target} "$@"; }
 gx() { gxi "$@" | less -R; }
@@ -112,12 +112,16 @@ config_todo_count() {
   ((n)) && echo -n $n || echo -n '0'
 }
 
-PROMPT_COMMAND='PS1="\W($(git_state):$(config_todo_count)) $(jobs_marker) "'
+# PROMPT_COMMAND='PS1="\W($(git_state):$(config_todo_count)) $(jobs_marker) "'
+PROMPT_COMMAND='PS1="\W($(git_state)) $(jobs_marker) "'
 
 if [ "$OS" = "Mac" ]; then
   if [ -f $(brew --prefix)/etc/bash_completion ]; then
     . $(brew --prefix)/etc/bash_completion
   fi
+  export JAVA_HOME="${JAVA_HOME:-/opt/homebrew/opt/openjdk/libexec/openjdk.jdk/Contents/Home}"
+  # this breaks .clojure/deps.edn, why did we do this again?
+  # export XDG_CONFIG_HOME=$HOME/.config
 fi
 
 if [ -f "$HOME/.bashrc.local" ]; then

@@ -55,8 +55,9 @@ dotfiles_setup() {
 }
 
 mac_deps() {
-  brew install clojure-lsp/brew/clojure-lsp-native tree-sitter luajit neovim ripgrep fd tree openjdk@18 borkdude/brew/babashka jq harelba/q/q ranger cmus tig newsboat
+  brew install clojure-lsp/brew/clojure-lsp-native tree-sitter luajit neovim ripgrep fd tree openjdk@18 borkdude/brew/babashka jq harelba/q/q ranger cmus tig newsboat sox
   brew install --cask emacs
+  brew install --cask libreoffice
 }
 
 linux_deps() {
@@ -92,6 +93,11 @@ pull_files() {
 setup_dirs() {
   mkdir -vp $HOME/.notes
   mkdir -vp $HOME/.newsboat
+}
+
+config() {
+  # turn off mouse acceleration
+  defaults write .GlobalPreferences com.apple.mouse.scaling -1
 }
 
 # ripgrep, ag?, clojure-lsp, clj-kondo, tree-sitter
