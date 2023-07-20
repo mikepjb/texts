@@ -9,6 +9,14 @@ require('packer').startup(function(use)
   use 'tpope/vim-fugitive'
   use 'neovim/nvim-lspconfig'
   use 'tpope/vim-fireplace'
+  use {
+    'folke/trouble.nvim',
+    config = function()
+      require('trouble').setup {
+        icons = false
+      }
+    end
+  }
   -- use {
   --   '~/src/replica.nvim',
   --   config = function()
@@ -18,15 +26,6 @@ require('packer').startup(function(use)
   --     })
   --   end,
   --   ft = {'clojure'}
-  -- }
-  -- return {
-  --  "folke/trouble.nvim",
-  --  dependencies = { "nvim-tree/nvim-web-devicons" },
-  --  opts = {
-  --   -- your configuration comes here
-  --   -- or leave it empty to use the default settings
-  --   -- refer to the configuration section below
-  --  },
   -- }
   use 'leafgarland/typescript-vim'
   use 'maxmellon/vim-jsx-pretty'
@@ -163,6 +162,7 @@ vim.keymap.set('n', '<Leader>f', ':Telescope find_files<CR>')
 vim.keymap.set('n', '<Leader>b', ':Telescope buffers<CR>')
 vim.keymap.set('n', '<Leader>g', ':Telescope live_grep<CR>')
 vim.keymap.set('n', '<Leader>h', ':History<CR>')
+vim.keymap.set('n', '<Leader>t', ':Trouble<CR>')
 
 vim.keymap.set('n', '<Leader>c', ':copen<CR>') -- current list
 vim.keymap.set('n', '<Leader>e', ':Explore<CR>')
