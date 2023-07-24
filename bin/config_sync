@@ -100,6 +100,43 @@ config() {
   defaults write .GlobalPreferences com.apple.mouse.scaling -1
 }
 
+linux_config() {
+  if [[ -f "$HOME/.config/sway/config" ]]; then
+    echo 'sway config already exists'
+  else
+    mkdir -p $HOME/.config/sway
+    ln -s $PWD/sway.config $HOME/.config/sway/config
+  fi
+
+  if [[ -f "$HOME/.config/foot/foot.ini" ]]; then
+    echo 'foot config already exists'
+  else
+    mkdir -p $HOME/.config/foot
+    ln -s $PWD/foot.ini $HOME/.config/foot/foot.ini
+  fi
+
+  # append to /etc/systemd/logind.conf
+  # HandlePowerKey=ignore
+  # HandlePowerKeyLongPress=ignore
+}
+
+linux_packages() {
+  pacman -S tmux neovim vim rg fd node sway dmenu ttf-font-awesome
+  yay -S ttf-recursive
+
+  # check that this package does NOT exist due to a bug with wayland
+  # it causes telegram/pavucontrol/wdisplays to take a long time to open,
+  # though I am not sure why!
+  #
+  # https://github.com/swaywm/sway/issues/7600
+  # xdg-desktop-portal-gnome
+}
+
+linux_services() {
+  # check these are running/available
+  # ntpd - for time sync
+}
+
 # ripgrep, ag?, clojure-lsp, clj-kondo, tree-sitter
 # bb, clojure itself.., postgresql/psql, python, xmllint/2
 
@@ -109,5 +146,6 @@ env_info
 git_config
 dotfiles_setup
 js_deps
-pull_files
+# pull_files
 setup_dirs
+linux_config
