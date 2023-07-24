@@ -121,7 +121,7 @@ linux_config() {
 }
 
 linux_packages() {
-  pacman -S tmux neovim vim rg fd node sway dmenu ttf-font-awesome
+  pacman -S tmux neovim vim rg fd node sway dmenu ttf-nerd-fonts-symbols ttf-font-awesome jq
   yay -S ttf-recursive
 
   # check that this package does NOT exist due to a bug with wayland
@@ -135,6 +135,7 @@ linux_packages() {
 linux_services() {
   # check these are running/available
   # ntpd - for time sync
+  echo 'nothing'
 }
 
 # ripgrep, ag?, clojure-lsp, clj-kondo, tree-sitter

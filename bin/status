@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+# date=$(date +'%A, %b %d')
+
+while
+  cpu_temp=$(sensors -j | jq '."k10temp-pci-00c3".Tctl.temp1_input')
+
+
+  echo "  ${cpu_temp%.*} | $(date)"
+do sleep 1
+done
