@@ -117,6 +117,13 @@ linux_config() {
     ln -s $PWD/foot.ini $HOME/.config/foot/foot.ini
   fi
 
+  if [[ -f "$HOME/.config/tofi/config" ]]; then
+    echo 'tofi config already exists'
+  else
+    mkdir -p $HOME/.config/tofi
+    ln -s $PWD/tofi.config $HOME/.config/tofi/config
+  fi
+
   # append to /etc/systemd/logind.conf
   # HandlePowerKey=ignore
   # HandlePowerKeyLongPress=ignore
