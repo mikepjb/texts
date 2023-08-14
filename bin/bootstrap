@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+set +e
+
+echo 'Bootstrapping environment, making sure we have the essentials'
+
+command -v node 2>&1 && echo 'node installed'
+command -v nide 2>&1 && echo 'nide installed' || echo 'nide not installed!!'

@@ -1,0 +1,12 @@
+#!/usr/bin/env node
+// j: joins working environments together, we need a better name but this works
+// nice ergonomically with j + enter to quickly update.
+'use strict';
+
+console.log('ok boomer!');
+
+const aur_packages = [
+  'mkinitcpio-firmware', // extra firmware sometimes required when building the kernel using Arch's mkinitcpio.
+];
+
+// mkinitcpio-firmware from AUR

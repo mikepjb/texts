@@ -9,6 +9,8 @@ WARN='\033[1;33m'
 NC='\033[0m'
 PACKER="$HOME/.local/share/nvim/site/pack/packer/start/packer.nvim"
 
+join_by() { local IFS="$1"; shift; echo "$*"; }
+
 git_config() {
   echo 'Configuring git..'
   git config --global --replace-all core.editor 'vim'
@@ -120,9 +122,30 @@ linux_config() {
   # HandlePowerKeyLongPress=ignore
 }
 
+packages=(
+  tmux
+  neovim
+  vim
+  rg
+  fd
+  node
+  sway
+  dmenu
+  ttf-nerd-fonts-symbols
+  ttf-font-awesome
+  jq
+  nmap
+  xdg-desktop-portal-wlr
+  libreoffice
+  ddcutil
+  grim
+  wl-clipboard
+  nvtop
+)
+
 linux_packages() {
-  pacman -S tmux neovim vim rg fd node sway dmenu ttf-nerd-fonts-symbols ttf-font-awesome jq
-  yay -S ttf-recursive
+  pacman -S $(join_by : "${packages[@]}")
+  yay -S ttf-recursive clojure-lsp wdisplays grimshot
 
   # check that this package does NOT exist due to a bug with wayland
   # it causes telegram/pavucontrol/wdisplays to take a long time to open,
