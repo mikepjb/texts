@@ -22,6 +22,7 @@ join_by() { local IFS="$1"; shift; echo "$*"; }
 
 path_dirs=(
   /opt/homebrew/bin
+  $HOME/.config/n/bin
   /usr/local/bin
   /usr/local/sbin
   /bin
@@ -49,6 +50,7 @@ export PAGER='less -S'
 export SSH_AUTH_SOCK=$HOME/.ssh/ssh-agent.socket
 export NPM_CONFIG_PREFIX=$HOME/.config/npm
 export GEM_HOME=$HOME/.config/gems
+export N_PREFIX=$HOME/.config/n
 
 alias gr='cd $(git rev-parse --show-toplevel || echo ".")'
 alias ..='cd ..'

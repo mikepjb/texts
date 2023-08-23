@@ -14,4 +14,16 @@ const packages = [
   // 'rofi', // spotlight-like searcher
 ];
 
+const global_npm_packages = [
+  'n', // node version switcher
+];
+
+const ensure_directories = () => {
+  // mkdir ~/.config/n
+  console.log('i am not ensuring directories are created yet, please fix me!')
+}
+
+ensure_directories()
+
+
 // mkinitcpio-firmware from AUR
