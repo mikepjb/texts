@@ -8,10 +8,12 @@ console.log('ok boomer!');
 const aur_packages = [
   'mkinitcpio-firmware', // extra firmware sometimes required when building the kernel using Arch's mkinitcpio.
   'tofi', // spotlight-like searcher
+  'sc-im', // command line spreadsheet with vim keybinds
 ];
 
 const packages = [
   // 'rofi', // spotlight-like searcher
+  'byacc', // yacc, another compiler - one that sc-im depends on
 ];
 
 const global_npm_packages = [

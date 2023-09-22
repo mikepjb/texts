@@ -168,6 +168,12 @@ linux_services() {
   echo 'nothing'
 }
 
+golang_tools() {
+  go install github.com/cosmtrek/air@latest
+  go install golang.org/x/tools/cmd/goimports@latest
+  go install golang.org/x/tools/gopls@latest
+}
+
 # ripgrep, ag?, clojure-lsp, clj-kondo, tree-sitter
 # bb, clojure itself.., postgresql/psql, python, xmllint/2
 
@@ -180,3 +186,4 @@ js_deps
 # pull_files
 setup_dirs
 linux_config
+golang_tools

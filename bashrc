@@ -41,6 +41,7 @@ path_dirs=(
 
 export PATH=$(join_by : "${path_dirs[@]}")
 export CDPATH=".:$HOME/src"
+export GOPATH=$HOME/go
 export EDITOR=nvim
 export HISTCONTROL=erasedups
 export HISTSIZE=10000
