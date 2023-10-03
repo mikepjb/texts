@@ -9,6 +9,7 @@ const aur_packages = [
   'mkinitcpio-firmware', // extra firmware sometimes required when building the kernel using Arch's mkinitcpio.
   'tofi', // spotlight-like searcher
   'sc-im', // command line spreadsheet with vim keybinds
+  'openrgb', // for controlling rgb e.g inwin 301c color header
 ];
 
 const packages = [
@@ -18,6 +19,8 @@ const packages = [
 
 const global_npm_packages = [
   'n', // node version switcher
+  'prettier', // to order tailwindcss classes in nvim
+  'prettier-plugin-tailwindcss'
 ];
 
 const ensure_directories = () => {

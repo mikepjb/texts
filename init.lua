@@ -211,6 +211,12 @@ vim.keymap.set('n', '<Tab>', '<C-^>')
 vim.keymap.set('i', '<C-c>', '<esc>', { noremap = true })
 vim.keymap.set('n', 'Q', '@q')
 vim.keymap.set('n', 'gb', ':Git blame<CR>')
+vim.keymap.set(
+  'n',
+  'gp',
+  ':silent %!prettier --plugin "$HOME/.config/npm/lib/node_modules/prettier-plugin-tailwindcss/dist/index.mjs" --print-width 100 %<CR>'
+)
+
 vim.keymap.set('c', '<C-b>', '<Left>')
 vim.keymap.set('c', '<C-f>', '<Right>')
 vim.keymap.set('c', '<C-a>', '<Home>')
