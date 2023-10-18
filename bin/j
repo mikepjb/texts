@@ -10,11 +10,13 @@ const aur_packages = [
   'tofi', // spotlight-like searcher
   'sc-im', // command line spreadsheet with vim keybinds
   'openrgb', // for controlling rgb e.g inwin 301c color header
+  'grimshot', // for screenshots
 ];
 
 const packages = [
   // 'rofi', // spotlight-like searcher
   'byacc', // yacc, another compiler - one that sc-im depends on
+  'wl-clipboard', // required by grimshot to copy screenshots to clipboard
 ];
 
 const global_npm_packages = [
