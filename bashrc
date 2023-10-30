@@ -39,6 +39,15 @@ path_dirs=(
   $HOME/go/bin
 )
 
+# home cleaning
+export XDG_DATA_HOME=$HOME/.local/share
+export XDG_CACHE_HOME=$HOME/.local/cache
+export XDG_STATE_HOME=$HOME/.local/state
+export XDG_CONFIG_HOME=$HOME/.config
+export XAUTHORITY="$XDG_RUNTIME_DIR/Xauthority"
+export XINITRC="$XDG_CONFIG_HOME"/X11/xinitrc
+export XSERVERRC="$XDG_CONFIG_HOME"/X11/xserverrc
+
 export PATH=$(join_by : "${path_dirs[@]}")
 export CDPATH=".:$HOME/src"
 export GOPATH=$HOME/go

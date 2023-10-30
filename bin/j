@@ -11,12 +11,31 @@ const aur_packages = [
   'sc-im', // command line spreadsheet with vim keybinds
   'openrgb', // for controlling rgb e.g inwin 301c color header
   'grimshot', // for screenshots
+  'urlview', // for opening urls from mutt/newsboat/other cli based programs.
+  'yt-dlp',
+];
+
+const remove_packages = [
+  'pulseaudio', // replacing with pipewire, make sure it's not still installed.
 ];
 
 const packages = [
   // 'rofi', // spotlight-like searcher
   'byacc', // yacc, another compiler - one that sc-im depends on
   'wl-clipboard', // required by grimshot to copy screenshots to clipboard
+  'pipewire-jack',
+  'pipewire-alsa',
+  'pipewire-pulse',
+  'newsboat', // for rss feeds
+  'mpv', // video player
+  'bash-completion', // works with CDPATH & auto completes pacman packages!
+  'obs-studio', // screen recording
+  'v42lloopback-dkms', // also for screen recording
+  'v42lloopback-utils', // also for screen recording
+  'xdg-desktop-portal-wlr', // also.. for screen recording on wayland
+  'gst-plugin-pipewire', // wayland screen recording
+  'pipewire-v4l2', // wayland screen recording.. maybe?
+  'net-tools', // contains ifconfig, 'nuff said.
 ];
 
 const global_npm_packages = [
@@ -32,5 +51,8 @@ const ensure_directories = () => {
 
 ensure_directories()
 
+// sudo pacman -Rdd pulseaudio
+// sudo pacman -S pipewire-{jack,alsa,pulse}
+// systemctl --user enable --now pipewire pipewire-pulse pipewire-media-session
 
 // mkinitcpio-firmware from AUR

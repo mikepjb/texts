@@ -26,3 +26,7 @@ cyan - #22d3ee
 bright-cyan - #bae6fd
 white - #f1f1f1
 bright-white - #fffefe
+
+## Utilities
+
+- `nmcli` for linux networking e.g `nmcli c <network> disconnect`

@@ -1,15 +1,88 @@
 #!/usr/bin/env bash
 #
-# Sync is a script that makes sure your current environment is setup for development use. It should be idempotent,
+# chk, Check your computer is correctly configured, cleaned and setup for use.
+#
+# chk is a script that makes sure your current environment is setup for development use. It should be idempotent,
 # meaning you can run it multiple times without changing the output.
 
 set +e
 
+################################################
+# Config & Utility Functions                   #
+################################################
+
 WARN='\033[1;33m'
 NC='\033[0m'
 PACKER="$HOME/.local/share/nvim/site/pack/packer/start/packer.nvim"
+XDG_CONFIG_HOME="$HOME/.config"
+SCRIPT_DIR=$(dirname "$0")
+CONFIG_DIR=$(dirname "$SCRIPT_DIR")
+
+packages=(
+  tmux
+  neovim
+  vim
+  rg
+  fd
+  node
+  sway
+  dmenu
+  ttf-nerd-fonts-symbols
+  ttf-font-awesome
+  jq
+  nmap
+  xdg-desktop-portal-wlr
+  libreoffice
+  ddcutil
+  grim
+  wl-clipboard
+  nvtop
+  xclip
+  sqlite
+  postgresql
+)
+
+aur_packages=(
+  ttf-recursive
+  clojure-lsp
+  grimshot
+)
+
+home_items=(
+  .bash_history
+  .bash_profile
+  .bashrc
+  .gitconfig
+  .notes
+  .ssh
+  Documents
+  Downloads
+  Music
+  Pictures
+  Videos
+  VMs
+  bin
+  go
+)
+
+env_info() {
+  echo "shell: $SHELL"
+  echo "shell version: $(bash --version)"
+}
 
 join_by() { local IFS="$1"; shift; echo "$*"; }
+
+ensure_exists() {
+  backup_location="$HOME/Documents/.chk-backup-files"
+  mkdir -p $backup_location
+  [[ ! -L $2 ]] && mv $2 $backup_location # backup any 'real' files
+  mkdir -p $(dirname $1) # ensure parent directory is created
+  ln -sfv $1 $2 # refresh softlink so the reference is up to date.
+}
+
+################################################
+# Main Functions                               #
+################################################
 
 git_config() {
   echo 'Configuring git..'
@@ -38,32 +111,21 @@ dotfiles_setup() {
   echo 'Configuring dotfiles..'
   echo '. ~/.bashrc' > ~/.bash_profile
 
-  if [[ -f "$HOME/.bashrc" ]]; then
-    echo '~/.bashrc already exists, please use -f to overwrite'
-    printf "${WARN}we should check this is a softlink${NC}\n"
-    echo 'diff for ~/.bashrc'
-    diff bashrc $HOME/.bashrc
-  else
-    echo "~/.bashrc doesn't exist, softlinking texts bashrc content to ~/.bashrc"
-    # cp ./bashrc $HOME/.bashrc
-    ln -s $PWD/bashrc $HOME/.bashrc
-  fi
+  # bash config
+  ensure_exists $CONFIG_DIR/bashrc $HOME/.bashrc
+  ensure_exists $CONFIG_DIR/tmux.conf $XDG_CONFIG_HOME/tmux/tmux.conf
 
-  if [[ -f "$HOME/.tmux.conf" ]]; then
-    echo 'tmux.conf already exists'
-  else
-    ln -s $PWD/tmux.conf $HOME/.tmux.conf
-  fi
+  mkdir -p $HOME/.config/pg # postgres config directory
 }
 
 mac_deps() {
   brew install clojure-lsp/brew/clojure-lsp-native tree-sitter luajit neovim ripgrep fd tree openjdk@18 borkdude/brew/babashka jq harelba/q/q ranger cmus tig newsboat sox
   brew install --cask emacs
   brew install --cask libreoffice
-}
 
-linux_deps() {
-  echo 'do you have xclip installed?'
+  # mac os ncurses doesn't have the entry for tmux-256color so we download and set it manually.
+  curl -LO https://invisible-island.net/datafiles/current/terminfo.src.gz && gunzip terminfo.src.gz
+  sudo /usr/bin/tic -xe tmux-256color terminfo.src
 }
 
 js_deps() {
@@ -73,29 +135,9 @@ js_deps() {
   npm i -g typescript typescript-language-server
 }
 
-tmux_terminfo() {
-  # mac os ncurses doesn't have the entry for tmux-256color so we download and set it manually.
-  curl -LO https://invisible-island.net/datafiles/current/terminfo.src.gz && gunzip terminfo.src.gz
-  sudo /usr/bin/tic -xe tmux-256color terminfo.src
-}
-
-env_info() {
-  echo "shell: $SHELL"
-  echo "shell version: $(bash --version)"
-}
-
 if [[ ! -d $PACKER ]]; then
     git clone --depth 1 https://github.com/wbthomason/packer.nvim $PACKER
 fi
-
-pull_files() {
-  git -C ~/src/knowledge pull --ff-only
-}
-
-setup_dirs() {
-  mkdir -vp $HOME/.notes
-  mkdir -vp $HOME/.newsboat
-}
 
 config() {
   # turn off mouse acceleration
@@ -129,43 +171,21 @@ linux_config() {
   # HandlePowerKeyLongPress=ignore
 }
 
-packages=(
-  tmux
-  neovim
-  vim
-  rg
-  fd
-  node
-  sway
-  dmenu
-  ttf-nerd-fonts-symbols
-  ttf-font-awesome
-  jq
-  nmap
-  xdg-desktop-portal-wlr
-  libreoffice
-  ddcutil
-  grim
-  wl-clipboard
-  nvtop
-)
-
 linux_packages() {
-  pacman -S $(join_by : "${packages[@]}")
-  yay -S ttf-recursive clojure-lsp wdisplays grimshot
-
+  sudo pacman -Syu
+  sudo pacman -S --needed $(join_by ' ' "${packages[@]}")
+  # yay doesn't seem to work well (scdoc can't do something because it can't
+  # become root?
+  # yay -S --needed $(join_by ' ' "${aur_packages[@]}")
   # check that this package does NOT exist due to a bug with wayland
   # it causes telegram/pavucontrol/wdisplays to take a long time to open,
   # though I am not sure why!
-  #
   # https://github.com/swaywm/sway/issues/7600
-  # xdg-desktop-portal-gnome
+  pacman --query xdg-desktop-portal-gnome && sudo pacman -R xdg-desktop-portal-gnome
 }
 
 linux_services() {
-  # check these are running/available
-  # ntpd - for time sync
-  echo 'nothing'
+  sudo systemctl enable ntpd # for time sync
 }
 
 golang_tools() {
@@ -174,16 +194,19 @@ golang_tools() {
   go install golang.org/x/tools/gopls@latest
 }
 
-# ripgrep, ag?, clojure-lsp, clj-kondo, tree-sitter
-# bb, clojure itself.., postgresql/psql, python, xmllint/2
+kondo() { # tidy home directory
+  mkdir -p $HOME/.local/share
+  mkdir -p $HOME/.local/state
+  mkdir -p $HOME/.local/cache
+  mkdir -p $HOME/.config
 
-# typescript-language-server tsserver
+}
 
 env_info
 git_config
 dotfiles_setup
 js_deps
-# pull_files
-setup_dirs
 linux_config
+linux_packages
+linux_services
 golang_tools

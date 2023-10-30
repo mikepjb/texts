@@ -3,9 +3,17 @@
 # date=$(date +'%A, %b %d')
 
 while
-  cpu_temp=$(sensors -j | jq '."k10temp-pci-00c3".Tctl.temp1_input')
+  SENSORS_OUTPUT=$(sensors -j)
+
+  if [[ $(echo $SENSORS_OUTPUT | grep 'coretemp-isa') ]]; then
+    # for laptop
+    cpu_temp=$(sensors -j | jq '."coretemp-isa-0000"."Package id 0".temp1_input')
+  else
+    # for desktop
+    cpu_temp=$(sensors -j | jq '."k10temp-pci-00c3".Tctl.temp1_input')
+  fi
 
 
-  echo "  ${cpu_temp%.*} | $(date)"
+  echo " ${cpu_temp%.*} | $(date)"
 do sleep 1
 done
