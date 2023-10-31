@@ -109,6 +109,8 @@ require('lspconfig')['tsserver'].setup{
 
 local lspconfig = require("lspconfig")
 lspconfig.gopls.setup({
+  on_attach = on_attach,
+  flags = flags,
   settings = {
     gopls = {
       analyses = {
