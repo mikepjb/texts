@@ -81,6 +81,7 @@ alias nr='npm run'
 alias cds='cd ~/.config/nvim' # cd => setup
 alias t='config_todo_list'
 alias focus='play -n synth brownnoise synth pinknoise mix synth sine amod 0.1 20 gain -20'
+alias fsize='find . -type f  -exec du -h {} + | sort -h'
 
 gxi() { grep -r --color=always --exclude-dir={web-target,.clj-kondo,node_modules,out,target} "$@"; }
 gx() { gxi "$@" | less -R; }
